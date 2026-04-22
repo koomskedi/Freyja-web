@@ -97,17 +97,6 @@ export const SERVICES = {
     ],
     options: [],
   },
-  entretien: {
-    id: 'entretien',
-    name: 'Entretien',
-    subtitle: 'Soin · Rafraîchissement',
-    description:
-      "Un diagnostic honnête, un soin adapté. Parce qu'un cheveu nourri, c'est un cheveu qui pousse.",
-    image: '/images/entretien.jpg',
-    variants: [],
-    options: [],
-    info: 'Sur demande — contactez-nous pour un diagnostic personnalisé.',
-  },
 }
 
 export const TESTIMONIAL = {
@@ -127,7 +116,6 @@ export const ADVISOR_QUESTIONS = [
       { value: 'locks', label: 'Locks durables' },
       { value: 'tissages', label: 'Longueur & volume' },
       { value: 'perruques', label: 'Changement rapide' },
-      { value: 'entretien', label: 'Soin / entretien' },
     ],
   },
   {
