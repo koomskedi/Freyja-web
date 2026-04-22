@@ -319,7 +319,7 @@ export function Simulator({ services }) {
     const opts = category.options.filter((o) => optionIds.includes(o.id))
     const extras = opts.reduce((sum, o) => sum + o.price, 0)
     return base + extras
-  }, [category, variant, thickness, length, optionIds, isLocks, isInfoOnly])
+  }, [category, variant, thickness, length, optionIds, isLocks])
 
   const toggleOption = (id) => {
     setOptionIds((prev) =>
