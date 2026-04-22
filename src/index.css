@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 html {
@@ -11,8 +11,8 @@ html {
 }
 
 body {
-  background-color: #080A0D;
-  color: #D9C1D7;
+  background-color: #FAF6F0;
+  color: #2B1F24;
   font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -20,8 +20,8 @@ body {
 }
 
 ::selection {
-  background: #D9C1D7;
-  color: #080A0D;
+  background: #2B1F24;
+  color: #FAF6F0;
 }
 
 /* Custom scrollbar */
@@ -29,23 +29,23 @@ body {
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #080A0D;
+  background: #FAF6F0;
 }
 ::-webkit-scrollbar-thumb {
-  background: #734230;
+  background: #D9A8B8;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #BF7D56;
 }
 
-/* Elegant gradient placeholder for missing images */
+/* Elegant gradient placeholder for missing images — warm rose + gold on cream */
 .placeholder-gradient {
   background:
-    radial-gradient(ellipse at 20% 10%, rgba(217, 193, 215, 0.25), transparent 60%),
+    radial-gradient(ellipse at 20% 10%, rgba(217, 168, 184, 0.6), transparent 60%),
     radial-gradient(ellipse at 80% 90%, rgba(191, 125, 86, 0.35), transparent 55%),
-    radial-gradient(ellipse at 50% 50%, rgba(115, 66, 48, 0.3), transparent 70%),
-    linear-gradient(135deg, #1a0f1a 0%, #080A0D 100%);
+    radial-gradient(ellipse at 50% 50%, rgba(191, 174, 122, 0.25), transparent 70%),
+    linear-gradient(135deg, #F4E6EC 0%, #FAF6F0 100%);
 }
 
 .font-script {
@@ -56,8 +56,8 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.3'/%3E%3C/svg%3E");
-  opacity: 0.08;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.25'/%3E%3C/svg%3E");
+  opacity: 0.06;
   pointer-events: none;
-  mix-blend-mode: overlay;
+  mix-blend-mode: multiply;
 }
