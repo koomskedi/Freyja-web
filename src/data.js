@@ -9,9 +9,9 @@ export const SITE = {
   subtitle: 'Hairstylist · Aulnay',
   promise: 'Coiffure sans cire, respect total de la fibre, douceur extrême.',
   // ⚠️ Remplace ces liens par les vrais
-  bookingUrl: 'https://wa.me/33600000000',
-  instagramUrl: 'https://instagram.com/freyjahair',
-  phone: '+33 6 00 00 00 00',
+  bookingUrl: 'https://wa.me/33758308788',
+  instagramUrl: 'https://instagram.com/freya_wig',
+  phone: '+33 7 45 52 02 60',
   city: 'Aulnay-sous-Bois',
 }
 
