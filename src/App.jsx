@@ -17,11 +17,12 @@ import {
   Booking,
   Footer,
   StickyCTA,
+  Chatbot,
 } from './components.jsx'
 
 export default function App() {
   return (
-    <main className="relative min-h-screen bg-ink text-powder overflow-hidden">
+    <main className="relative min-h-screen bg-cream text-ink overflow-hidden">
       <Header />
       <Hero />
       <Manifesto />
@@ -32,6 +33,7 @@ export default function App() {
       <Booking />
       <Footer />
       <StickyCTA />
+      <Chatbot />
     </main>
   )
 }

@@ -95,15 +95,14 @@ export function Header() {
 // ============================================================
 export function Hero() {
   return (
-    <Section id="top" className="min-h-[100svh] flex items-center pt-32 pb-16 editorial-grain">
+    <Section id="top" className="min-h-[100svh] flex items-center pt-32 pb-16 bg-cream">
       <div className="absolute inset-0 -z-10">
-        <div className="absolute inset-0 placeholder-gradient" />
         <Img
           src="/images/hero.jpg"
           alt=""
-          className="absolute inset-0 w-full h-full object-cover opacity-40"
+          className="absolute inset-0 w-full h-full object-cover opacity-20"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-cream/40 via-cream/20 to-cream" />
+        <div className="absolute inset-0 bg-gradient-to-b from-cream/50 via-cream/20 to-cream" />
       </div>
 
       <div className="relative max-w-7xl mx-auto w-full grid md:grid-cols-12 gap-8 items-center">
@@ -235,17 +234,16 @@ export function Lookbook({ services }) {
             </h2>
           </div>
           <p className="text-ink/60 max-w-md">
-            Quatre savoir-faire, une même exigence : sublimer sans agresser.
+            Trois savoir-faire, une même exigence : sublimer sans agresser.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-6 gap-4 md:gap-6">
           {list.map((s, i) => {
             const spans = [
-              'md:col-span-4 md:row-span-2 aspect-[4/5] md:aspect-auto md:min-h-[500px]',
-              'md:col-span-2 aspect-square md:min-h-[240px]',
-              'md:col-span-2 aspect-square md:min-h-[240px]',
-              'md:col-span-3 aspect-[4/3] md:min-h-[280px]',
+              'md:col-span-4 aspect-[4/5] md:aspect-auto md:min-h-[520px]',
+              'md:col-span-2 aspect-square md:min-h-[260px]',
+              'md:col-span-6 aspect-[16/6] md:min-h-[280px]',
             ]
             return (
               <motion.a
@@ -309,10 +307,9 @@ export function Simulator({ services }) {
   }, [categoryId]) // eslint-disable-line
 
   const isLocks = categoryId === 'locks'
-  const isInfoOnly = categoryId === 'entretien'
 
   const price = useMemo(() => {
-    if (isInfoOnly || !variant) return null
+    if (!variant) return null
     let base = 0
     if (isLocks && variant.altByThickness) {
       base = variant.altByThickness[thickness]?.[length] ?? 0
@@ -361,11 +358,7 @@ export function Simulator({ services }) {
               </div>
             </StepBlock>
 
-            {isInfoOnly ? (
-              <div className="p-6 rounded-2xl border border-ink/15 bg-sand/50 text-ink/80">
-                {category.info}
-              </div>
-            ) : (
+            {(
               <>
                 <StepBlock label="2 · Variante">
                   <div className="flex flex-wrap gap-2">
@@ -447,12 +440,10 @@ export function Simulator({ services }) {
                 Votre prestation
               </div>
               <div className="font-serif text-3xl text-ink mb-1">{category.name}</div>
-              {!isInfoOnly && (
-                <div className="text-ink/70 mb-6">
-                  {variant?.name}
-                  {isLocks && ` · ${thickness} · ${length}`}
-                </div>
-              )}
+              <div className="text-ink/70 mb-6">
+                {variant?.name}
+                {isLocks && ` · ${thickness} · ${length}`}
+              </div>
               {optionIds.length > 0 && (
                 <ul className="mb-6 space-y-1 text-sm text-ink/60">
                   {category.options
@@ -465,10 +456,8 @@ export function Simulator({ services }) {
               <div className="border-t border-ink/20 pt-6">
                 <div className="text-xs uppercase tracking-widest text-ink/60">À partir de</div>
                 <div className="mt-1 flex items-baseline gap-1">
-                  <span className="font-serif text-6xl text-copper">
-                    {isInfoOnly ? '—' : price}
-                  </span>
-                  {!isInfoOnly && <span className="text-xl text-copper/80">€</span>}
+                  <span className="font-serif text-6xl text-copper">{price}</span>
+                  <span className="text-xl text-copper/80">€</span>
                 </div>
               </div>
               <a
@@ -734,5 +723,140 @@ export function StickyCTA() {
     >
       Réserver
     </a>
+  )
+}
+
+// ============================================================
+// Chatbot — widget flottant, pur React (pas d'IA)
+// ============================================================
+const CHAT_FLOWS = {
+  start: {
+    msg: "Bonjour 👋 Je suis l'assistante Freyja. Comment puis-je vous aider ?",
+    choices: [
+      { label: 'Tarifs Locks', next: 'locks' },
+      { label: 'Tarifs Tissages', next: 'tissages' },
+      { label: 'Tarifs Perruques', next: 'perruques' },
+      { label: 'Prendre rendez-vous', next: 'booking' },
+    ],
+  },
+  locks: {
+    msg: "Nous proposons :\n• Invisible Locks à partir de 60 €\n• Faux Locks à partir de 70 €\n• Retwist à partir de 50 €\n\nLe tarif dépend de l'épaisseur et de la longueur.",
+    choices: [
+      { label: 'Voir le simulateur', href: '#simulator' },
+      { label: 'Prendre rendez-vous', next: 'booking' },
+      { label: '← Retour', next: 'start' },
+    ],
+  },
+  tissages: {
+    msg: "Nos tissages :\n• Fulani — 50 €\n• Tissage ouvert — 45 €\n• Tissage fermé — 40 €\n• Closure — 50 €\n• Flip over — 60 €\n\nOptions : Custom closure +10 €, Boucles +10 €",
+    choices: [
+      { label: 'Voir le simulateur', href: '#simulator' },
+      { label: 'Prendre rendez-vous', next: 'booking' },
+      { label: '← Retour', next: 'start' },
+    ],
+  },
+  perruques: {
+    msg: "Pose perruque :\n• 4x4 / 5x5 — 20 €\n• 13x4 / 13x6 — 40 €\n\nRepose :\n• 4x4 / 5x5 — 15 €\n• 13x4 / 13x6 — 30 €",
+    choices: [
+      { label: 'Voir le simulateur', href: '#simulator' },
+      { label: 'Prendre rendez-vous', next: 'booking' },
+      { label: '← Retour', next: 'start' },
+    ],
+  },
+  booking: {
+    msg: "Pour réserver, contactez-nous directement sur WhatsApp ou Instagram. Réponse rapide garantie ✨",
+    choices: [
+      { label: 'WhatsApp', href: SITE.bookingUrl, external: true },
+      { label: 'Instagram', href: SITE.instagramUrl, external: true },
+      { label: '← Retour', next: 'start' },
+    ],
+  },
+}
+
+export function Chatbot() {
+  const [open, setOpen] = useState(false)
+  const [node, setNode] = useState('start')
+  const flow = CHAT_FLOWS[node]
+
+  return (
+    <>
+      {/* Bubble */}
+      <button
+        onClick={() => setOpen((o) => !o)}
+        aria-label="Ouvrir le chat"
+        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-ink text-cream shadow-glow flex items-center justify-center text-2xl hover:scale-105 transition-transform"
+      >
+        {open ? '×' : '💬'}
+      </button>
+
+      {/* Panel */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            transition={{ duration: 0.25 }}
+            className="fixed bottom-24 right-6 z-50 w-80 rounded-3xl border border-ink/10 bg-cream shadow-[0_20px_60px_-10px_rgba(43,31,36,0.25)] overflow-hidden"
+          >
+            {/* Header */}
+            <div className="px-5 py-4 border-b border-ink/10 flex items-center gap-3 bg-sand">
+              <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
+                <Img src="/images/logo.png" alt="Freyja" className="w-full h-full object-cover" />
+              </div>
+              <div>
+                <div className="font-serif text-sm text-ink">Freyja Hair</div>
+                <div className="text-[0.65rem] text-green-600 tracking-wide">● En ligne</div>
+              </div>
+            </div>
+
+            {/* Message */}
+            <div className="px-5 py-5">
+              <AnimatePresence mode="wait">
+                <motion.p
+                  key={node}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="text-sm text-ink/80 leading-relaxed whitespace-pre-line bg-powder/60 rounded-2xl rounded-tl-none px-4 py-3"
+                >
+                  {flow.msg}
+                </motion.p>
+              </AnimatePresence>
+            </div>
+
+            {/* Choices */}
+            <div className="px-5 pb-5 flex flex-col gap-2">
+              {flow.choices.map((c) => {
+                if (c.href) {
+                  return (
+                    <a
+                      key={c.label}
+                      href={c.href}
+                      target={c.external ? '_blank' : '_self'}
+                      rel="noreferrer"
+                      onClick={() => !c.external && setOpen(false)}
+                      className="text-sm px-4 py-2.5 rounded-full border border-ink/20 text-ink hover:bg-ink hover:text-cream transition text-center"
+                    >
+                      {c.label}
+                    </a>
+                  )
+                }
+                return (
+                  <button
+                    key={c.label}
+                    onClick={() => setNode(c.next)}
+                    className="text-sm px-4 py-2.5 rounded-full border border-ink/20 text-ink hover:bg-ink hover:text-cream transition text-left"
+                  >
+                    {c.label}
+                  </button>
+                )
+              })}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   )
 }
