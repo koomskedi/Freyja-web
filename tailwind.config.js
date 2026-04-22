@@ -4,8 +4,12 @@ export default {
   theme: {
     extend: {
       colors: {
-        powder: '#D9C1D7',
-        ink: '#080A0D',
+        cream: '#FAF6F0',
+        sand: '#F0E7DA',
+        powder: '#EADCE4',
+        rose: '#D9A8B8',
+        ink: '#2B1F24',
+        muted: '#7A6A6F',
         gold: '#BFAE7A',
         copper: '#BF7D56',
         earth: '#734230',
@@ -16,8 +20,9 @@ export default {
         script: ['"Great Vibes"', 'cursive'],
       },
       boxShadow: {
-        glow: '0 0 60px -10px rgba(217, 193, 215, 0.35)',
-        gold: '0 0 40px -10px rgba(191, 174, 122, 0.4)',
+        glow: '0 20px 60px -20px rgba(43, 31, 36, 0.25)',
+        gold: '0 20px 40px -15px rgba(191, 125, 86, 0.3)',
+        soft: '0 10px 40px -15px rgba(217, 168, 184, 0.5)',
       },
       animation: {
         'fade-up': 'fadeUp 0.8s ease-out forwards',
