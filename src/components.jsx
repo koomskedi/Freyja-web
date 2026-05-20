@@ -1,6 +1,16 @@
 import React, { useState, useMemo, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { SITE, SERVICES } from './data.js'
+import {
+  SITE,
+  SERVICES,
+  SIM_TISSAGES,
+  SIM_PERRUQUE,
+  SIM_RETWIST,
+  MECHES_VIRGIN_BUNDLE,
+  MECHES_VIRGIN_PACK3,
+  MECHES_LACE,
+  MECHES_SEMI_NATURE,
+} from './data.js'
 
 // ============================================================
 // Shared primitives
@@ -66,9 +76,9 @@ export function Header() {
     >
       <nav className="max-w-7xl mx-auto flex items-center justify-between px-6 md:px-12 py-4">
         <a href="#top" className="flex items-center gap-3">
-          <Img src="/images/logo.png" alt="Freyja" className="h-10 w-10 rounded-full object-cover" />
+          <Img src="/images/logo.png" alt="Moon Studio" className="h-10 w-10 rounded-full object-cover" />
           <span className="font-serif text-xl tracking-wide text-ink hidden sm:block">
-            Freyja <span className="text-gold">Hair</span>
+            Moon <span className="text-gold">Studio</span>
           </span>
         </a>
         <div className="hidden md:flex items-center gap-8 text-sm tracking-wider uppercase text-ink/70">
@@ -113,15 +123,15 @@ export function Hero() {
           variants={stagger}
         >
           <motion.span variants={fadeUp} className="block text-[0.7rem] tracking-[0.4em] uppercase text-gold/90 mb-6">
-            Maison Freyja · {SITE.city}
+            Moon Studio · {SITE.city}
           </motion.span>
           <motion.h1
             variants={fadeUp}
             className="font-serif text-6xl md:text-8xl lg:text-[9rem] leading-[0.95] text-ink"
           >
-            <span className="block">Freyja</span>
-            <span className="block text-gold italic font-light text-4xl md:text-6xl lg:text-7xl mt-2">
-              hair &amp; soin
+            <span className="block">Moon Studio</span>
+            <span className="block text-gold italic font-light text-3xl md:text-5xl lg:text-6xl mt-2">
+              Coiffure &amp; Beauté
             </span>
           </motion.h1>
           <motion.p
@@ -158,7 +168,7 @@ export function Hero() {
           <div className="relative aspect-[3/4] rounded-[2rem] overflow-hidden shadow-glow">
             <Img
               src="/images/portrait.jpg"
-              alt="Travail Freyja"
+              alt="Travail Moon Studio"
               className="w-full h-full object-cover"
             />
           </div>
@@ -286,45 +296,308 @@ export function Lookbook({ services }) {
 // ============================================================
 // Simulator — prix dynamique
 // ============================================================
-export function Simulator({ services }) {
-  const [categoryId, setCategoryId] = useState('locks')
-  const [variantId, setVariantId] = useState(services.locks.variants[0].id)
-  const [thickness, setThickness] = useState('small')
-  const [length, setLength] = useState('moyen')
-  const [optionIds, setOptionIds] = useState([])
+// Simulator — Wizard multi-étapes Moon Studio
+// ============================================================
+const SIM_INIT = {
+  step: 'cat',
+  stack: [],
+  cat: null,
+  tissageType: null,
+  styling: false,
+  mechesByUs: false,
+  mecheQuality: null,
+  mecheFormat: null,
+  mecheLongueur: null,
+  lacePiece: null,
+  perruqueType: null,
+  lagos: false,
+  retwistTranche: null,
+  retwistStyling: false,
+}
 
-  const category = services[categoryId]
-  const variant = useMemo(
-    () => category.variants.find((v) => v.id === variantId) || category.variants[0],
-    [category, variantId]
-  )
+export function Simulator() {
+  const [st, setSt] = useState(SIM_INIT)
 
-  // Reset dependent state when category changes
-  useEffect(() => {
-    const firstVariant = category.variants[0]
-    setVariantId(firstVariant?.id || '')
-    setOptionIds([])
-  }, [categoryId]) // eslint-disable-line
+  const go = (step, updates = {}) =>
+    setSt((prev) => ({ ...prev, ...updates, step, stack: [...prev.stack, prev.step] }))
 
-  const isLocks = categoryId === 'locks'
+  const back = () =>
+    setSt((prev) => ({
+      ...prev,
+      step: prev.stack[prev.stack.length - 1] || 'cat',
+      stack: prev.stack.slice(0, -1),
+    }))
 
-  const price = useMemo(() => {
-    if (!variant) return null
-    let base = 0
-    if (isLocks && variant.altByThickness) {
-      base = variant.altByThickness[thickness]?.[length] ?? 0
-    } else {
-      base = variant.price ?? 0
+  const reset = () => setSt(SIM_INIT)
+
+  const lineItems = useMemo(() => {
+    const { cat, tissageType, styling, mechesByUs, mecheQuality, mecheFormat, mecheLongueur, lacePiece, perruqueType, lagos, retwistTranche, retwistStyling } = st
+    const items = []
+    switch (cat) {
+      case 'tissages': {
+        const ti = SIM_TISSAGES.find((i) => i.id === tissageType)
+        if (ti) items.push({ label: ti.label, prix: ti.prix })
+        if (styling) items.push({ label: 'Styling', prix: 20 })
+        if (mechesByUs) {
+          if (mecheQuality === 'virgin') {
+            if (mecheFormat === '1bundle' && mecheLongueur) {
+              const m = MECHES_VIRGIN_BUNDLE.find((m) => m.longueur === mecheLongueur)
+              if (m) items.push({ label: `Mèches Virgin — ${m.longueur}`, prix: m.prix })
+            } else if (mecheFormat === 'pack3' && mecheLongueur) {
+              const m = MECHES_VIRGIN_PACK3.find((m) => m.longueur === mecheLongueur)
+              if (m) items.push({ label: `Pack 3 boules Virgin — ${m.longueur}`, prix: m.prix })
+            } else if (mecheFormat === 'lace' && lacePiece) {
+              const m = MECHES_LACE.find((m) => m.label === lacePiece)
+              if (m) items.push({ label: lacePiece, prix: m.prix })
+            }
+          } else if (mecheQuality === 'semi' && mecheLongueur) {
+            const m = MECHES_SEMI_NATURE.find((m) => m.longueur === mecheLongueur)
+            if (m) items.push({ label: `Mèches Semi-nature — ${m.longueur}`, prix: m.prix })
+          }
+        }
+        break
+      }
+      case 'perruque': {
+        const pi = SIM_PERRUQUE.find((i) => i.id === perruqueType)
+        if (pi) items.push({ label: pi.label, prix: pi.prix })
+        if (styling) items.push({ label: 'Styling de choix', prix: 20 })
+        if (lagos) items.push({ label: 'Custom Lagos Hairline', prix: 10 })
+        break
+      }
+      case 'ponytail':
+        items.push({ label: 'Pony Tail (mèches incluses)', prix: 80 })
+        break
+      case 'natte_tissage':
+        items.push({ label: 'Natte × Tissage', prix: 80 })
+        break
+      case 'retwist': {
+        const ri = SIM_RETWIST.find((i) => i.id === retwistTranche)
+        if (ri) items.push({ label: `Retwist — ${ri.label}`, prix: ri.prix })
+        if (retwistStyling) items.push({ label: 'Styling avec mèches', prix: 20 })
+        break
+      }
+      default:
+        break
     }
-    const opts = category.options.filter((o) => optionIds.includes(o.id))
-    const extras = opts.reduce((sum, o) => sum + o.price, 0)
-    return base + extras
-  }, [category, variant, thickness, length, optionIds, isLocks])
+    return items
+  }, [st])
 
-  const toggleOption = (id) => {
-    setOptionIds((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
-    )
+  const total = lineItems.reduce((sum, i) => sum + i.prix, 0)
+
+  const renderStep = () => {
+    switch (st.step) {
+      case 'cat':
+        return (
+          <WizStep title="Quelle prestation souhaitez-vous ?" onBack={null}>
+            <div className="flex flex-wrap gap-3">
+              {[
+                { id: 'tissages', label: 'Tissages' },
+                { id: 'perruque', label: 'Pose Perruque' },
+                { id: 'ponytail', label: 'Pony Tail' },
+                { id: 'natte_tissage', label: 'Natte × Tissage' },
+                { id: 'retwist', label: 'Retwist Locs' },
+              ].map((c) => (
+                <SimPill
+                  key={c.id}
+                  active={st.cat === c.id}
+                  onClick={() => {
+                    if (c.id === 'ponytail' || c.id === 'natte_tissage') go('recap', { cat: c.id })
+                    else if (c.id === 'tissages') go('tissage_type', { cat: c.id })
+                    else if (c.id === 'perruque') go('perruque_type', { cat: c.id })
+                    else go('retwist_tranche', { cat: c.id })
+                  }}
+                >
+                  {c.label}
+                </SimPill>
+              ))}
+            </div>
+          </WizStep>
+        )
+      case 'tissage_type':
+        return (
+          <WizStep title="Choisissez votre tissage" onBack={back}>
+            <div className="flex flex-wrap gap-3">
+              {SIM_TISSAGES.map((t) => (
+                <SimPill
+                  key={t.id}
+                  active={st.tissageType === t.id}
+                  onClick={() => go('tissage_styling', { tissageType: t.id })}
+                >
+                  {t.label} <span className="opacity-60 text-xs ml-1">{t.prix}€</span>
+                </SimPill>
+              ))}
+            </div>
+          </WizStep>
+        )
+      case 'tissage_styling':
+        return (
+          <WizStep title="Souhaitez-vous un styling ?" subtitle="Layers, boucles ou les deux — +20€" onBack={back}>
+            <div className="flex flex-wrap gap-3">
+              <SimPill onClick={() => go('tissage_meches', { styling: true })}>Oui +20€</SimPill>
+              <SimPill onClick={() => go('tissage_meches', { styling: false })}>Non</SimPill>
+            </div>
+          </WizStep>
+        )
+      case 'tissage_meches':
+        return (
+          <WizStep title="Les mèches sont fournies par Moon Studio ?" onBack={back}>
+            <div className="flex flex-wrap gap-3">
+              <SimPill onClick={() => go('recap', { mechesByUs: false })}>Non, j'apporte les miennes</SimPill>
+              <SimPill onClick={() => go('meche_quality', { mechesByUs: true })}>Oui</SimPill>
+            </div>
+          </WizStep>
+        )
+      case 'meche_quality':
+        return (
+          <WizStep title="Qualité des mèches" onBack={back}>
+            <div className="flex flex-wrap gap-3">
+              <SimPill active={st.mecheQuality === 'virgin'} onClick={() => go('meche_virgin_format', { mecheQuality: 'virgin' })}>Virgin Hair</SimPill>
+              <SimPill active={st.mecheQuality === 'semi'} onClick={() => go('meche_longueur_semi', { mecheQuality: 'semi' })}>Semi-nature</SimPill>
+            </div>
+          </WizStep>
+        )
+      case 'meche_virgin_format':
+        return (
+          <WizStep title="Format Virgin Hair" onBack={back}>
+            <div className="flex flex-wrap gap-3">
+              <SimPill active={st.mecheFormat === '1bundle'} onClick={() => go('meche_longueur_b1', { mecheFormat: '1bundle' })}>1 Bundle</SimPill>
+              <SimPill active={st.mecheFormat === 'pack3'} onClick={() => go('meche_longueur_p3', { mecheFormat: 'pack3' })}>Pack 3 boules</SimPill>
+              <SimPill active={st.mecheFormat === 'lace'} onClick={() => go('meche_lace', { mecheFormat: 'lace' })}>Lace & Closure</SimPill>
+            </div>
+          </WizStep>
+        )
+      case 'meche_longueur_b1':
+        return (
+          <WizStep title="Longueur — 1 Bundle" onBack={back}>
+            <div className="flex flex-wrap gap-3">
+              {MECHES_VIRGIN_BUNDLE.map((m) => (
+                <SimPill key={m.longueur} active={st.mecheLongueur === m.longueur} onClick={() => go('recap', { mecheLongueur: m.longueur })}>
+                  {m.longueur} <span className="opacity-60 text-xs ml-1">{m.prix}€</span>
+                </SimPill>
+              ))}
+            </div>
+          </WizStep>
+        )
+      case 'meche_longueur_p3':
+        return (
+          <WizStep title="Longueur — Pack 3 boules" onBack={back}>
+            <div className="flex flex-wrap gap-3">
+              {MECHES_VIRGIN_PACK3.map((m) => (
+                <SimPill key={m.longueur} active={st.mecheLongueur === m.longueur} onClick={() => go('recap', { mecheLongueur: m.longueur })}>
+                  {m.longueur} <span className="opacity-60 text-xs ml-1">{m.prix}€</span>
+                </SimPill>
+              ))}
+            </div>
+          </WizStep>
+        )
+      case 'meche_lace':
+        return (
+          <WizStep title="Lace & Closure" onBack={back}>
+            <div className="flex flex-col gap-3">
+              {MECHES_LACE.map((m) => (
+                <SimPill key={m.label} active={st.lacePiece === m.label} onClick={() => go('recap', { lacePiece: m.label })}>
+                  <span className="flex-1 text-left">{m.label}</span>
+                  <span className="opacity-60 text-xs ml-2">{m.prix}€</span>
+                </SimPill>
+              ))}
+            </div>
+          </WizStep>
+        )
+      case 'meche_longueur_semi':
+        return (
+          <WizStep title="Longueur — Semi-nature" onBack={back}>
+            <div className="flex flex-wrap gap-3">
+              {MECHES_SEMI_NATURE.map((m) => (
+                <SimPill key={m.longueur} active={st.mecheLongueur === m.longueur} onClick={() => go('recap', { mecheLongueur: m.longueur })}>
+                  {m.longueur} <span className="opacity-60 text-xs ml-1">{m.prix}€</span>
+                </SimPill>
+              ))}
+            </div>
+          </WizStep>
+        )
+      case 'perruque_type':
+        return (
+          <WizStep title="Type de pose perruque" subtitle="Inclus : customisation + natte" onBack={back}>
+            <div className="flex flex-wrap gap-3">
+              {SIM_PERRUQUE.map((p) => (
+                <SimPill key={p.id} active={st.perruqueType === p.id} onClick={() => go('perruque_styling', { perruqueType: p.id })}>
+                  {p.label} <span className="opacity-60 text-xs ml-1">{p.prix}€</span>
+                </SimPill>
+              ))}
+            </div>
+          </WizStep>
+        )
+      case 'perruque_styling':
+        return (
+          <WizStep title="Styling de choix ?" subtitle="+20€" onBack={back}>
+            <div className="flex flex-wrap gap-3">
+              <SimPill onClick={() => go('perruque_lagos', { styling: true })}>Oui +20€</SimPill>
+              <SimPill onClick={() => go('perruque_lagos', { styling: false })}>Non</SimPill>
+            </div>
+          </WizStep>
+        )
+      case 'perruque_lagos':
+        return (
+          <WizStep title="Custom Lagos Hairline ?" subtitle="+10€" onBack={back}>
+            <div className="flex flex-wrap gap-3">
+              <SimPill onClick={() => go('recap', { lagos: true })}>Oui +10€</SimPill>
+              <SimPill onClick={() => go('recap', { lagos: false })}>Non</SimPill>
+            </div>
+          </WizStep>
+        )
+      case 'retwist_tranche':
+        return (
+          <WizStep title="Nombre de locks" onBack={back}>
+            <div className="flex flex-wrap gap-3">
+              {SIM_RETWIST.map((r) => (
+                <SimPill key={r.id} active={st.retwistTranche === r.id} onClick={() => go('retwist_styling', { retwistTranche: r.id })}>
+                  {r.label} <span className="opacity-60 text-xs ml-1">{r.prix}€</span>
+                </SimPill>
+              ))}
+            </div>
+          </WizStep>
+        )
+      case 'retwist_styling':
+        return (
+          <WizStep title="Styling avec mèches ?" subtitle="+20€" onBack={back}>
+            <div className="flex flex-wrap gap-3">
+              <SimPill onClick={() => go('retwist_photo', { retwistStyling: true })}>Oui +20€</SimPill>
+              <SimPill onClick={() => go('recap', { retwistStyling: false })}>Non</SimPill>
+            </div>
+          </WizStep>
+        )
+      case 'retwist_photo':
+        return (
+          <WizStep title="Une précision importante" onBack={back}>
+            <div className="rounded-2xl border border-gold/40 bg-sand/50 p-6 text-ink/80">
+              📸 <strong>Une photo de la coupe souhaitée</strong> vous sera demandée avant la confirmation de votre rendez-vous.
+            </div>
+            <button
+              onClick={() => go('recap')}
+              className="mt-6 px-6 py-3 rounded-full bg-ink text-cream text-sm tracking-wide hover:shadow-glow transition"
+            >
+              J'ai compris, voir le récap →
+            </button>
+          </WizStep>
+        )
+      case 'recap':
+        return (
+          <WizStep title="Votre devis est prêt" onBack={back}>
+            <p className="text-sm text-muted mb-6 leading-relaxed">
+              Récapitulatif à droite. Pour confirmer votre rendez-vous, contactez-nous sur WhatsApp —
+              un acompte de 20€ vous sera demandé.
+            </p>
+            <button
+              onClick={reset}
+              className="text-xs uppercase tracking-widest text-muted hover:text-copper transition"
+            >
+              ← Recommencer
+            </button>
+          </WizStep>
+        )
+      default:
+        return null
+    }
   }
 
   return (
@@ -336,137 +609,68 @@ export function Simulator({ services }) {
             Simulateur <span className="italic text-gold">de prix</span>
           </h2>
           <p className="mt-4 text-ink/60 max-w-xl mx-auto">
-            Composez votre prestation. Le prix est indicatif — il peut être ajusté selon l'épaisseur
-            de vos cheveux et la quantité de mèches.
+            Composez votre prestation étape par étape. Le tarif final est confirmé lors de la réservation.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-5 gap-6 md:gap-10">
-          {/* Controls */}
-          <div className="md:col-span-3 space-y-8">
-            <StepBlock label="1 · Catégorie">
-              <div className="flex flex-wrap gap-2">
-                {Object.values(services).map((s) => (
-                  <Pill
-                    key={s.id}
-                    active={categoryId === s.id}
-                    onClick={() => setCategoryId(s.id)}
-                  >
-                    {s.name}
-                  </Pill>
-                ))}
-              </div>
-            </StepBlock>
-
-            {(
-              <>
-                <StepBlock label="2 · Variante">
-                  <div className="flex flex-wrap gap-2">
-                    {category.variants.map((v) => (
-                      <Pill
-                        key={v.id}
-                        active={variantId === v.id}
-                        onClick={() => setVariantId(v.id)}
-                      >
-                        {v.name}
-                      </Pill>
-                    ))}
-                  </div>
-                </StepBlock>
-
-                {isLocks && (
-                  <>
-                    <StepBlock label="3 · Épaisseur">
-                      <div className="flex flex-wrap gap-2">
-                        {[
-                          { id: 'small', label: 'Small' },
-                          { id: 'moyen', label: 'Moyen' },
-                          { id: 'grand', label: 'Grand' },
-                        ].map((t) => (
-                          <Pill
-                            key={t.id}
-                            active={thickness === t.id}
-                            onClick={() => setThickness(t.id)}
-                          >
-                            {t.label}
-                          </Pill>
-                        ))}
-                      </div>
-                    </StepBlock>
-
-                    <StepBlock label="4 · Longueur">
-                      <div className="flex flex-wrap gap-2">
-                        {[
-                          { id: 'court', label: 'Court' },
-                          { id: 'moyen', label: 'Moyen' },
-                          { id: 'long', label: 'Long' },
-                        ].map((l) => (
-                          <Pill
-                            key={l.id}
-                            active={length === l.id}
-                            onClick={() => setLength(l.id)}
-                          >
-                            {l.label}
-                          </Pill>
-                        ))}
-                      </div>
-                    </StepBlock>
-                  </>
-                )}
-
-                {category.options.length > 0 && (
-                  <StepBlock label={isLocks ? '5 · Options' : '3 · Options'}>
-                    <div className="flex flex-wrap gap-2">
-                      {category.options.map((o) => (
-                        <Pill
-                          key={o.id}
-                          active={optionIds.includes(o.id)}
-                          onClick={() => toggleOption(o.id)}
-                        >
-                          {o.name} <span className="opacity-70">+{o.price}€</span>
-                        </Pill>
-                      ))}
-                    </div>
-                  </StepBlock>
-                )}
-              </>
-            )}
+        <div className="grid md:grid-cols-5 gap-8 md:gap-10">
+          {/* Wizard */}
+          <div className="md:col-span-3 min-h-[320px]">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={st.step}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.3 }}
+              >
+                {renderStep()}
+              </motion.div>
+            </AnimatePresence>
           </div>
 
-          {/* Recap */}
+          {/* Recap card */}
           <div className="md:col-span-2">
-            <div className="sticky top-28 p-8 rounded-3xl border border-rose/40 bg-powder/60 backdrop-blur shadow-soft">
-              <div className="text-xs uppercase tracking-[0.3em] text-gold/80 mb-2">
-                Votre prestation
-              </div>
-              <div className="font-serif text-3xl text-ink mb-1">{category.name}</div>
-              <div className="text-ink/70 mb-6">
-                {variant?.name}
-                {isLocks && ` · ${thickness} · ${length}`}
-              </div>
-              {optionIds.length > 0 && (
-                <ul className="mb-6 space-y-1 text-sm text-ink/60">
-                  {category.options
-                    .filter((o) => optionIds.includes(o.id))
-                    .map((o) => (
-                      <li key={o.id}>+ {o.name}</li>
-                    ))}
+            <div className="sticky top-28 p-8 rounded-3xl border border-rose bg-cream shadow-soft">
+              <div className="text-xs uppercase tracking-[0.3em] text-gold mb-6">Votre devis</div>
+
+              {lineItems.length > 0 ? (
+                <ul className="space-y-3 mb-6">
+                  {lineItems.map((item, i) => (
+                    <li key={i} className="flex justify-between gap-3 text-sm">
+                      <span className="text-ink/80">{item.label}</span>
+                      <span className="font-medium text-ink whitespace-nowrap">{item.prix}€</span>
+                    </li>
+                  ))}
                 </ul>
+              ) : (
+                <p className="text-sm text-muted italic mb-6">
+                  Choisissez une prestation pour démarrer l'estimation.
+                </p>
               )}
-              <div className="border-t border-ink/20 pt-6">
-                <div className="text-xs uppercase tracking-widest text-ink/60">À partir de</div>
-                <div className="mt-1 flex items-baseline gap-1">
-                  <span className="font-serif text-6xl text-copper">{price}</span>
-                  <span className="text-xl text-copper/80">€</span>
-                </div>
-              </div>
+
+              {lineItems.length > 0 && (
+                <>
+                  <div className="border-t border-ink/10 pt-5 mb-2 flex justify-between items-baseline">
+                    <div className="text-xs uppercase tracking-widest text-muted">Total estimé</div>
+                    <div className="font-serif text-5xl text-copper leading-none">
+                      {total}<span className="text-xl">€</span>
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center text-xs text-muted mb-8">
+                    <span>Acompte à la réservation</span>
+                    <span className="font-medium text-ink">20€</span>
+                  </div>
+                </>
+              )}
+
               <a
                 href={SITE.bookingUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-8 block text-center px-6 py-4 rounded-full bg-ink text-cream font-medium tracking-wider uppercase text-sm hover:shadow-glow transition"
+                className="block text-center px-6 py-4 rounded-full bg-ink text-cream text-sm tracking-wider uppercase hover:shadow-glow transition"
               >
-                Réserver cette prestation
+                Réserver sur WhatsApp
               </a>
             </div>
           </div>
@@ -476,30 +680,40 @@ export function Simulator({ services }) {
   )
 }
 
-function StepBlock({ label, children }) {
+function WizStep({ title, subtitle, onBack, children }) {
   return (
     <div>
-      <div className="text-xs uppercase tracking-[0.3em] text-gold/80 mb-3">{label}</div>
+      {onBack && (
+        <button
+          onClick={onBack}
+          className="text-xs uppercase tracking-widest text-muted hover:text-copper transition mb-6 block"
+        >
+          ← Retour
+        </button>
+      )}
+      <div className="mb-6">
+        <h3 className="font-serif text-2xl md:text-3xl text-ink leading-tight">{title}</h3>
+        {subtitle && <p className="text-sm text-muted mt-1">{subtitle}</p>}
+      </div>
       {children}
     </div>
   )
 }
 
-function Pill({ active, onClick, children }) {
+function SimPill({ active, onClick, children }) {
   return (
     <button
       onClick={onClick}
-      className={`px-5 py-2.5 rounded-full text-sm tracking-wide transition border ${
+      className={`px-5 py-2.5 rounded-full text-sm tracking-wide transition border flex items-center gap-1 ${
         active
-          ? 'bg-ink text-cream border-ink shadow-glow'
-          : 'border-ink/25 text-ink/80 hover:border-ink/60 hover:text-ink'
+          ? 'bg-gold text-ink border-gold'
+          : 'border-gold/60 text-muted hover:border-copper hover:text-ink'
       }`}
     >
       {children}
     </button>
   )
 }
-
 // ============================================================
 // Advisor — conseiller guidé (pur React, pas de LLM)
 // ============================================================
@@ -693,7 +907,7 @@ export function Footer() {
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-ink/50">
         <div className="flex items-center gap-3">
           <Img src="/images/logo.png" alt="" className="h-8 w-8 rounded-full object-cover" />
-          <span className="font-serif tracking-wide text-ink/80">Freyja Hair</span>
+          <span className="font-serif tracking-wide text-ink/80">Moon Studio</span>
           <span className="opacity-60">· {SITE.city}</span>
         </div>
         <div className="flex items-center gap-6">
@@ -704,7 +918,7 @@ export function Footer() {
             WhatsApp
           </a>
         </div>
-        <div className="text-xs opacity-70">© {new Date().getFullYear()} Freyja Hair</div>
+        <div className="text-xs opacity-70">© {new Date().getFullYear()} Moon Studio</div>
       </div>
     </footer>
   )
@@ -731,7 +945,7 @@ export function StickyCTA() {
 // ============================================================
 const CHAT_FLOWS = {
   start: {
-    msg: "Bonjour 👋 Je suis l'assistante Freyja. Comment puis-je vous aider ?",
+    msg: "Bonjour 👋 Je suis l'assistante Moon Studio. Comment puis-je vous aider ?",
     choices: [
       { label: 'Tarifs Locks', next: 'locks' },
       { label: 'Tarifs Tissages', next: 'tissages' },
@@ -802,10 +1016,10 @@ export function Chatbot() {
             {/* Header */}
             <div className="px-5 py-4 border-b border-ink/10 flex items-center gap-3 bg-sand">
               <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
-                <Img src="/images/logo.png" alt="Freyja" className="w-full h-full object-cover" />
+                <Img src="/images/logo.png" alt="Moon Studio" className="w-full h-full object-cover" />
               </div>
               <div>
-                <div className="font-serif text-sm text-ink">Freyja Hair</div>
+                <div className="font-serif text-sm text-ink">Moon Studio</div>
                 <div className="text-[0.65rem] text-green-600 tracking-wide">● En ligne</div>
               </div>
             </div>

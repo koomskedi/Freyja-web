@@ -27,7 +27,7 @@ export default function App() {
       <Hero />
       <Manifesto />
       <Lookbook services={SERVICES} />
-      <Simulator services={SERVICES} />
+      <Simulator />
       <Advisor questions={ADVISOR_QUESTIONS} />
       <Testimonial testimonial={TESTIMONIAL} />
       <Booking />
