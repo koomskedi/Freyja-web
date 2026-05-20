@@ -1,14 +1,12 @@
 // ============================================================
-// FREYJA HAIR — Content & pricing source of truth
-// Edit here to update the whole site.
+// MOON STUDIO — Content & pricing source of truth
 // ============================================================
 
 export const SITE = {
-  name: 'Freyja Hair',
+  name: 'Moon Studio',
   tagline: "L'or entre les mains pour un cheveu qui respire et qui pousse.",
-  subtitle: 'Hairstylist · Aulnay',
+  subtitle: 'Coiffure & Beauté',
   promise: 'Coiffure sans cire, respect total de la fibre, douceur extrême.',
-  // ⚠️ Remplace ces liens par les vrais
   bookingUrl: 'https://wa.me/33758308788',
   instagramUrl: 'https://instagram.com/freya_wig',
   phone: '+33 7 45 52 02 60',
@@ -16,7 +14,7 @@ export const SITE = {
 }
 
 // ============================================================
-// SERVICES — used by Lookbook + Simulator
+// SERVICES — Lookbook + Advisor (sections visuelles uniquement)
 // ============================================================
 export const SERVICES = {
   locks: {
@@ -102,12 +100,9 @@ export const SERVICES = {
 export const TESTIMONIAL = {
   quote:
     "Coiffure sans cire, faite avec soin et respect. Une vraie pépite, les cheveux ont grave poussé.",
-  author: 'Cliente Freyja',
+  author: 'Cliente Moon Studio',
 }
 
-// ============================================================
-// ADVISOR — pur React, pas de LLM. Recommandation basée sur les réponses.
-// ============================================================
 export const ADVISOR_QUESTIONS = [
   {
     id: 'goal',
@@ -137,3 +132,65 @@ export const ADVISOR_QUESTIONS = [
     ],
   },
 ]
+
+// ============================================================
+// SIMULATOR CATALOGUE — Nouveau catalogue complet Moon Studio
+// ============================================================
+
+export const SIM_TISSAGES = [
+  { id: 'ouvert',        label: 'Tissage ouvert',  prix: 65 },
+  { id: 'ferme',         label: 'Tissage fermé',   prix: 60 },
+  { id: 'closure',       label: 'Closure',         prix: 70 },
+  { id: 'flipover',      label: 'Flipover',        prix: 70 },
+  { id: 'closure_locks', label: 'Closure Locks',   prix: 75 },
+]
+
+export const SIM_PERRUQUE = [
+  { id: 'p5x4',  label: 'Pose 5×4 / 5×5',   prix: 60, inclus: 'Customisation + natte' },
+  { id: 'p13x4', label: 'Pose 13×4 / 13×6', prix: 70, inclus: 'Customisation + natte' },
+]
+
+export const SIM_RETWIST = [
+  { id: 'r60',  label: '60 à 80 locks',   prix: 60 },
+  { id: 'r80',  label: '80 à 100 locks',  prix: 80 },
+  { id: 'r100', label: '100 à 200 locks', prix: 100 },
+]
+
+export const MECHES_VIRGIN_BUNDLE = [
+  { longueur: '18 pouces', prix: 50 },
+  { longueur: '20 pouces', prix: 55 },
+  { longueur: '22 pouces', prix: 60 },
+  { longueur: '24 pouces', prix: 70 },
+  { longueur: '26 pouces', prix: 75 },
+  { longueur: '28 pouces', prix: 80 },
+  { longueur: '30 pouces', prix: 90 },
+]
+
+export const MECHES_VIRGIN_PACK3 = [
+  { longueur: '18 pouces', prix: 150 },
+  { longueur: '20 pouces', prix: 165 },
+  { longueur: '22 pouces', prix: 180 },
+  { longueur: '24 pouces', prix: 210 },
+  { longueur: '26 pouces', prix: 225 },
+  { longueur: '28 pouces', prix: 240 },
+  { longueur: '30 pouces', prix: 270 },
+]
+
+export const MECHES_LACE = [
+  { label: 'Lace Frontal HD 13×6 — 18 pouces',          prix: 150 },
+  { label: 'Lace Frontal HD 13×6 — 14 pouces',          prix: 130 },
+  { label: 'Lace Front Transparent 13×6 — 14 pouces',   prix: 130 },
+  { label: 'Closure 5×5 HD',                            prix: 100 },
+  { label: 'Closure 5×5 Lace transparente',             prix: 85  },
+]
+
+export const MECHES_SEMI_NATURE = [
+  { longueur: '18 pouces', prix: 35 },
+  { longueur: '20 pouces', prix: 40 },
+  { longueur: '22 pouces', prix: 45 },
+  { longueur: '24 pouces', prix: 50 },
+  { longueur: '26 pouces', prix: 55 },
+  { longueur: '28 pouces', prix: 60 },
+]
+
+export const ACOMPTE = 20
